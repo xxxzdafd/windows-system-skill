@@ -24,7 +24,8 @@ PowerShell-native Windows administration skill for AI agents — token-efficient
 - **截图 + OCR** — 安装 Tesseract 后截图转文字
 - **UI 自动化** — 鼠标/键盘/窗口控制，含 IME 输入法切换
 - **安全网** — ⚠️ 标记危险操作，内置 `-WhatIf` 预览
-- **Quick Settings 面板** — 系统托盘一键切换 HDR、电源模式、深色模式、音量、夜间模式。零依赖，纯 PowerShell，右键即开
+- **Quick Settings Panel** — system tray toggles for HDR, power mode, dark/light theme, volume. Zero deps, pure PowerShell, right-click to run
+  **Quick Settings 面板** — 系统托盘一键切换 HDR、电源模式、深色模式、音量。零依赖，纯 PowerShell，右键即开
 
 ## Design Principles / 设计原则
 
