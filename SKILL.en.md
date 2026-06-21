@@ -20,6 +20,7 @@ PowerShell-native Windows administration — inspect and control every major sub
 | "no permission/add user" | [user.md](references/user.md) |
 | "edit registry/search registry" | [registry.md](references/registry.md) |
 | "what system/how much RAM/hardware" | [system.md](references/system.md) |
+| "quick settings/HDR/power mode/dark mode/volume" | [quick-settings.ps1](references/quick-settings.ps1) |
 
 ## Safety Rules
 - check for `⚠️` prefix = destructive. Always confirm with user before running.
