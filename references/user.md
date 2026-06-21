@@ -1,4 +1,4 @@
-# User 鈥?Accounts, Groups, Permissions, UAC
+# User — Accounts, Groups, Permissions, UAC
 
 ## User Accounts
 ```
@@ -16,7 +16,7 @@ Get-LocalUser -Name "username" | fl *
 Get-WinEvent -FilterHashtable @{LogName='Security';ID=4624} -MaxEvents 20
 ```
 
-## 鈿狅笍 User Management
+## ⚠️ User Management
 ```
 # Create user
 New-LocalUser -Name "username" -Password (ConvertTo-SecureString "Pass123!" -AsPlainText -Force)
@@ -62,7 +62,7 @@ Get-Content C:\secpolicy.inf | Select-String "SeNetworkLogonRight"
 # Password policy
 net accounts
 
-# 鈿狅笍 Set password policy (domain)
+# ⚠️ Set password policy (domain)
 net accounts /minpwlen:8 /maxpwage:90
 ```
 
@@ -80,6 +80,6 @@ Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Syste
 # Current audit policy
 auditpol /get /category:*
 
-# 鈿狅笍 Enable account logon auditing
+# ⚠️ Enable account logon auditing
 auditpol /set /subcategory:"Logon" /success:enable /failure:enable
 ```
