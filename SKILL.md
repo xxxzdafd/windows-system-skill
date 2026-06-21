@@ -20,6 +20,7 @@ PowerShell-native Windows administration — inspect and control every major sub
 | "用户权限不够/加人" | [user.md](references/user.md) |
 | "改注册表/搜注册表" | [registry.md](references/registry.md) |
 | "啥系统/多少内存/硬件" | [system.md](references/system.md) |
+| "快速设置/HDR/电源/深色模式/音量" | [quick-settings.ps1](references/quick-settings.ps1) |
 
 ## Safety Rules
 - `⚠️` prefix = destructive. Always confirm with user before running.
