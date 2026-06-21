@@ -17,11 +17,11 @@ gps -Name chrome | fl *
 # Process with most handles
 gps | sort handles -desc | select -f 10
 
-# Port 鈫?process mapping
+# Port → process mapping
 netstat -ano | findstr LISTEN
 # Then: gps -Id <PID>
 
-# 鈿狅笍 Kill by name
+# ⚠️ Kill by name
 Stop-Process -Name notepad -Force
 
 # Kill by port
@@ -60,7 +60,7 @@ Get-ScheduledTask -TaskName "\Microsoft\Windows\..." | fl *
 # Run task
 Start-ScheduledTask -TaskName "..."
 
-# 鈿狅笍 Disable task
+# ⚠️ Disable task
 Disable-ScheduledTask -TaskName "..."
 ```
 
