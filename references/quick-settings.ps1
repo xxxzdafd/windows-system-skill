@@ -2,7 +2,7 @@
   Quick Settings Panel for Windows v3
   Tray tool: HDR, power mode, dark mode, volume, RGB off/on, monitor sleep, network monitor
   Pure PowerShell 5.1+ with LightsOff.exe (C#, HID direct to ASUS Aura)
-  RGB: HID ReportID 0xEC → ITE 8291 via LightingService SMBus bridge
+  RGB: XML config rewrite (AuraDlgSetProfile.xml) + LightingService restart
   Credit: Reverse-engineered from ASUS Aura HID descriptor (UsagePage 0xFF72, VID_0B05 PID_18F3)
 #>
 
@@ -29,18 +29,17 @@ $script:lightsOffExe = "$PSScriptRoot\LightsOff.exe"
 function Invoke-LightsOff {
     if (Test-Path $script:lightsOffExe) {
         $r = & $script:lightsOffExe 2>&1
-        if ($r -eq "OK") {
-            # Stop service to prevent refresh, keep HID state persistent
-            Get-Service LightingService -EA 0 | Stop-Service -Force -EA 0
-            return $true
-        }
+        return ($r -eq "OK")
     }
     return $false
 }
 
 function Invoke-LightsOn {
-    $svc = Get-Service LightingService -EA 0
-    if ($svc) { Start-Service $svc -EA 0 }
+    if (Test-Path $script:lightsOffExe) {
+        $r = & $script:lightsOffExe "on" 2>&1
+        return ($r -eq "OK")
+    }
+    return $false
 }
 
 function Invoke-SleepMode {
@@ -49,11 +48,13 @@ function Invoke-SleepMode {
     Set-Volume 0
     if (-not $script:sleepWasDark) { Set-DarkMode $true }
     Invoke-LightsOff
+    Start-Sleep 5
     $script:sleepModeOn = $true
 }
 
 function Invoke-WakeMode {
     Invoke-LightsOn
+    Start-Sleep 5
     if (-not $script:sleepWasDark) { Set-DarkMode $false }
     Set-Volume $script:sleepWasVol
     $script:sleepModeOn = $false
