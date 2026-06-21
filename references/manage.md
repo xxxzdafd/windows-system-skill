@@ -1,6 +1,6 @@
-# Management 鈥?Updates, Programs, Remote, Boot, Power, UI Automation
+# Management — Updates, Programs, Remote, Boot, Power, UI Automation
 
-## 馃摲 Screen Reading 鈥?See What's On Screen
+## 📷 Screen Reading — See What's On Screen
 ```
 # === Screenshot ===
 Add-Type -AssemblyName System.Windows.Forms,System.Drawing
@@ -9,10 +9,10 @@ $g = [Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen(0,0,0,0,$bmp.Size)
 $bmp.Save("$env:TEMP\screen.png"); $g.Dispose(); $bmp.Dispose()
 
 # === OCR: Tesseract (install once: winget install UB-Mannheim.TesseractOCR) ===
-# Screenshot 鈫?text
+# Screenshot → text
 tesseract "$env:TEMP\screen.png" stdout -l eng+chi_sim
 
-# Screenshot 鈫?text file
+# Screenshot → text file
 tesseract "$env:TEMP\screen.png" "$env:TEMP\screen-out" -l eng+chi_sim
 Get-Content "$env:TEMP\screen-out.txt"
 
@@ -35,7 +35,7 @@ $wnd = $r.FindFirst([System.Windows.Automation.TreeScope]::Children, $cond)
 if ($wnd) { $wnd.GetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern).DocumentRange.GetText(5000) }
 ```
 
-## 馃柋锔?Keyboard & Mouse (UI Automation)
+## 🖱️ Keyboard & Mouse (UI Automation)
 
 ### Prerequisite: Set Input Method to English
 ```
@@ -139,13 +139,13 @@ usoclient StartScan
 usoclient StartDownload
 usoclient StartInstall
 
-# 鈿狅笍 Update history
+# ⚠️ Update history
 Get-WUHistory | Select Date,Title,Result
 
-# 鈿狅笍 Pause updates for 7 days
+# ⚠️ Pause updates for 7 days
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "PauseUpdatesExpiryTime" -Value (Get-Date).AddDays(7).ToString("yyyy-MM-ddTHH:mm:ssZ") -PropertyType String -Force
 
-# 鈿狅笍 Resume updates
+# ⚠️ Resume updates
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "PauseUpdatesExpiryTime" -ErrorAction 0
 ```
 
@@ -160,15 +160,15 @@ Get-ChildItem "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Unins
 # Winget (modern package manager)
 winget list
 winget search firefox
-# 鈿狅笍 Install
+# ⚠️ Install
 winget install Mozilla.Firefox
-# 鈿狅笍 Uninstall
+# ⚠️ Uninstall
 winget uninstall "Mozilla Firefox"
 
 # AppX packages (Windows Store apps)
 Get-AppxPackage | Select Name,Version,InstallLocation | Sort Name
 
-# 鈿狅笍 Remove AppX package for all users
+# ⚠️ Remove AppX package for all users
 Get-AppxPackage -Name "*xbox*" | Remove-AppxPackage -AllUsers
 ```
 
@@ -177,7 +177,7 @@ Get-AppxPackage -Name "*xbox*" | Remove-AppxPackage -AllUsers
 # WinRM status
 winrm get winrm/config/service
 
-# 鈿狅笍 Enable WinRM
+# ⚠️ Enable WinRM
 Enable-PSRemoting -Force
 
 # One-time remote PowerShell
@@ -217,7 +217,7 @@ powercfg /list
 # Current scheme details
 powercfg /query
 
-# 鈿狅笍 Set scheme to High Performance
+# ⚠️ Set scheme to High Performance
 powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 
 # Sleep/hibernate status
