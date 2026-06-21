@@ -29,14 +29,18 @@ $script:lightsOffExe = "$PSScriptRoot\LightsOff.exe"
 function Invoke-LightsOff {
     if (Test-Path $script:lightsOffExe) {
         $r = & $script:lightsOffExe 2>&1
-        return ($r -eq "OK")
+        if ($r -eq "OK") {
+            # Stop service to prevent refresh, keep HID state persistent
+            Get-Service LightingService -EA 0 | Stop-Service -Force -EA 0
+            return $true
+        }
     }
     return $false
 }
 
 function Invoke-LightsOn {
     $svc = Get-Service LightingService -EA 0
-    if ($svc) { Restart-Service LightingService -Force -EA 0 }
+    if ($svc) { Start-Service $svc -EA 0 }
 }
 
 function Invoke-SleepMode {
