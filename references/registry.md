@@ -1,4 +1,4 @@
-# Registry 鈥?Read, Write, Search, ACL
+# Registry — Read, Write, Search, ACL
 
 ## Read
 ```
@@ -15,7 +15,7 @@ Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion"
 Get-ChildItem HKCU:\Software
 ```
 
-## 鈿狅笍 Write (confirm with user first!)
+## ⚠️ Write (confirm with user first!)
 ```
 # Create key
 New-Item -Path "HKLM:\Software\MyApp"
@@ -47,7 +47,7 @@ Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall" | ForE
 # Get ACL
 Get-Acl -Path "HKLM:\Software\MyKey" | Format-List
 
-# 鈿狅笍 Set ACL (grant full control to user)
+# ⚠️ Set ACL (grant full control to user)
 $acl = Get-Acl "HKLM:\Software\MyKey"
 $rule = New-Object System.Security.AccessControl.RegistryAccessRule("Everyone","FullControl","Allow")
 $acl.SetAccessRule($rule)
