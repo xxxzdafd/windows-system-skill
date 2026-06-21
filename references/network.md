@@ -1,4 +1,4 @@
-# Network 鈥?IP, DNS, Firewall, WiFi, Connections
+# Network — IP, DNS, Firewall, WiFi, Connections
 
 ## Quick Diagnosis Chain
 ```
@@ -65,7 +65,7 @@ Get-NetFirewallRule | Where Enabled -eq $true | Select DisplayName,Direction,Act
 # Rules blocking a port
 Get-NetFirewallRule | Where { $_.Enabled -and ($_. | Get-NetFirewallPortFilter).LocalPort -eq 8080 }
 
-# 鈿狅笍 Allow port
+# ⚠️ Allow port
 New-NetFirewallRule -DisplayName "Allow 8080" -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
 ```
 
@@ -80,10 +80,10 @@ netsh wlan show interfaces
 # Saved profiles
 netsh wlan show profiles
 
-# 鈿狅笍 Connect
+# ⚠️ Connect
 netsh wlan connect name="SSID"
 
-# 鈿狅笍 Forget profile
+# ⚠️ Forget profile
 netsh wlan delete profile name="SSID"
 
 # Generate QR for guest WiFi
@@ -95,13 +95,13 @@ netsh wlan show profile name="SSID" key=clear
 # Mapped drives
 Get-SmbMapping
 
-# 鈿狅笍 Map drive
+# ⚠️ Map drive
 New-PSDrive -Name Z -PSProvider FileSystem -Root "\\server\share" -Persist
 
 # Routing table
 Get-NetRoute | Select DestinationPrefix,NextHop,InterfaceAlias
 
-# 鈿狅笍 Add route
+# ⚠️ Add route
 route add 10.0.0.0 mask 255.0.0.0 192.168.1.1
 
 # Current network speed/adapter info
