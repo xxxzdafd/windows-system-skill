@@ -2,7 +2,7 @@
   Quick Settings Panel for Windows v3
   Tray tool: HDR, power mode, dark mode, volume, RGB off/on, monitor sleep, network monitor
   Pure PowerShell 5.1+ with LightsOff.exe (C#, HID direct to ASUS Aura)
-  RGB: XML config rewrite (AuraDlgSetProfile.xml) + LightingService restart
+  RGB: COM daemon (ASUS Aura COM Token + SetLightColor) - kills process to restore
   Credit: Reverse-engineered from ASUS Aura HID descriptor (UsagePage 0xFF72, VID_0B05 PID_18F3)
 #>
 
@@ -28,18 +28,15 @@ $script:lightsOffExe = "$PSScriptRoot\LightsOff.exe"
 
 function Invoke-LightsOff {
     if (Test-Path $script:lightsOffExe) {
-        $r = & $script:lightsOffExe 2>&1
-        return ($r -eq "OK")
+        Start-Process $script:lightsOffExe -WindowStyle Hidden
+        return $true
     }
     return $false
 }
 
 function Invoke-LightsOn {
-    if (Test-Path $script:lightsOffExe) {
-        $r = & $script:lightsOffExe "on" 2>&1
-        return ($r -eq "OK")
-    }
-    return $false
+    Get-Process LightsOff -EA 0 | Stop-Process -Force
+    return $true
 }
 
 function Invoke-SleepMode {
