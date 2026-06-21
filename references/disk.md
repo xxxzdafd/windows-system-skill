@@ -1,4 +1,4 @@
-# Disk 鈥?Volumes, Permissions, Symlinks, BitLocker
+# Disk — Volumes, Permissions, Symlinks, BitLocker
 
 ## Drives & Volumes
 ```
@@ -23,7 +23,7 @@ icacls C:\Path\To\Folder
 # Get owner
 Get-Acl C:\Path | Select Owner
 
-# 鈿狅笍 Take ownership
+# ⚠️ Take ownership
 takeown /f C:\Path /r
 icacls C:\Path /grant "$env:USERNAME:F" /t
 
@@ -73,7 +73,7 @@ Get-BitLockerVolume | Select MountPoint,ProtectionStatus,EncryptionPercentage
 # Recovery key (AD)
 Get-BitLockerVolume | fl RecoveryPassword*
 
-# 鈿狅笍 Enable BitLocker
+# ⚠️ Enable BitLocker
 Enable-BitLocker C: -PasswordProtector -Password (ConvertTo-SecureString "xxxx" -AsPlainText -Force)
 ```
 
