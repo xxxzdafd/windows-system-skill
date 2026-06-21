@@ -1,31 +1,50 @@
-# windows-system-skill
+# Windows System Skill
 
-PowerShell-native Windows system administration skill for [OpenCode](https://opencode.ai).
+PowerShell-native Windows administration skill for AI agents — token-efficient, full coverage, production-ready commands.
 
-## What is it?
+给 AI Agent 的 Windows 系统管理技能包。纯 PowerShell，省 token，全覆盖，拿来即用。
 
-An OpenCode skill that lets AI assistants manage, troubleshoot, and inspect Windows systems using native PowerShell commands. Covers processes, services, disk, network, registry, users, event logs, updates, and system configuration.
+## Modules / 模块
 
-## Quick Start
+| Module | File | Coverage |
+|--------|------|----------|
+| System | [system.md](references/system.md) | OS/Hardware/BIOS/Environment/Restore |
+| Process | [process.md](references/process.md) | Processes/Services/Scheduler/Startup |
+| Network | [network.md](references/network.md) | IP/DNS/Firewall/WiFi/Routing/Shares |
+| Disk | [disk.md](references/disk.md) | Volumes/Permissions/Symlinks/BitLocker |
+| Registry | [registry.md](references/registry.md) | Read/Write/Search/ACL |
+| User | [user.md](references/user.md) | Users/Groups/UAC/Audit/Privileges |
+| Event | [event.md](references/event.md) | Event Logs/Performance/BlueScreen/Dumps |
+| Manage | [manage.md](references/manage.md) | Updates/Programs/WinRM/Boot/Power/UI Automation/OCR/SendKeys |
+| Quick Settings | [quick-settings.ps1](references/quick-settings.ps1) | HDR/Power Mode/Dark Mode/Volume/Display Tray Tool |
 
-1. Install the skill in OpenCode
-2. Tell the AI: "电脑卡了" or "网络不通" or "磁盘满了"
-3. The AI opens the matching reference file and runs diagnostic commands
+## Features / 特色
 
-## Structure
+- **10 个诊断链** — "电脑卡/网络断/磁盘满/蓝屏/端口占用"等场景一键排查
+- **截图 + OCR** — 安装 Tesseract 后截图转文字
+- **UI 自动化** — 鼠标/键盘/窗口控制，含 IME 输入法切换
+- **安全网** — ⚠️ 标记危险操作，内置 `-WhatIf` 预览
 
-| Path | Description |
-|------|-------------|
-| SKILL.md | Entry point, symptom-to-command mapping |
-| eferences/process.md | Process inspection and management |
-| eferences/disk.md | Disk usage and file operations |
-| eferences/network.md | Network diagnostics and firewall |
-| eferences/event.md | Event log and crash analysis |
-| eferences/manage.md | Software and update management |
-| eferences/user.md | User and permission management |
-| eferences/registry.md | Registry operations |
-| eferences/system.md | System information and hardware |
+## Design Principles / 设计原则
 
-## License
+- **Every command is runnable as-is** — no assembly required, copy and execute
+  **每条命令即用** — 不拼接，不解释，直接跑
+- **Pure PowerShell** — object output, AI can filter with `.Where()` / `.Select()`
+  **纯 PowerShell** — 输出结构化对象，AI 可二次过滤
+- **Token efficient** — ~350 lines covers all core scenarios
+  **省 token** — 约 350 行覆盖所有核心场景
+- **Safety marked** — `⚠️` prefix for destructive operations
+  **安全标记** — `⚠️` 标记破坏性操作，默认带保护
+
+## Quick Start / 快速开始
+
+```powershell
+# Clone to your agent's skills directory
+git clone https://github.com/xxxzdafd/windows-system-skill.git ~/.config/opencode/skills/windows-system
+```
+
+Then tell your agent: "电脑卡了" / "my computer is slow" — it knows which reference to open.
+
+## License / 许可证
 
 MIT
