@@ -1,4 +1,4 @@
-# System 鈥?OS, Hardware, Environment
+# System — OS, Hardware, Environment
 
 ## OS Info
 ```
@@ -34,7 +34,7 @@ Get-CimInstance Win32_DiskDrive | Select Model,Size,MediaType
 ## BIOS / UEFI
 ```
 Get-CimInstance Win32_BIOS | Select Manufacturer,SMBIOSBIOSVersion,SerialNumber
-# Boot mode: if SecureBoot == 1 鈫?UEFI
+# Boot mode: if SecureBoot == 1 → UEFI
 Get-CimInstance Win32_ComputerSystem | Select BootupState
 Confirm-SecureBootUEFI
 ```
@@ -59,10 +59,10 @@ $env:MYVAR = "value"
 # List restore points
 Get-ComputerRestorePoint
 
-# 鈿狅笍 Create restore point
+# ⚠️ Create restore point
 Checkpoint-Computer -Description "Before changes" -RestorePointType MODIFY_SETTINGS
 
-# 鈿狅笍 Restore
+# ⚠️ Restore
 Restore-Computer -RestorePoint 1
 ```
 
