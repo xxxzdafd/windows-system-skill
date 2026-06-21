@@ -101,12 +101,29 @@ function Start-RGBServices {
     $script:stoppedSvcs = @()
 }
 
+function Test-Admin {
+    $id = [Security.Principal.WindowsIdentity]::GetCurrent()
+    (New-Object Security.Principal.WindowsPrincipal($id)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
 function Invoke-SleepMode {
     $script:sleepWasDark = Get-DarkMode
     $script:sleepWasVol = Get-Volume
     Set-Volume 0
     if (-not $script:sleepWasDark) { Set-DarkMode $true }
-    if (-not (Invoke-ASUSComOff)) { Stop-RGBServices }
+    
+    # Layer 1: ASUS Aura COM API (RAM/GPU/peripheral LEDs)
+    $ok = Invoke-ASUSComOff
+    
+    # Layer 2: Admin privileges -> stop lighting services (motherboard RGB)
+    if (-not $ok -and (Test-Admin)) { Stop-RGBServices; $ok = ($script:stoppedSvcs.Count -gt 0) }
+    
+    # Layer 3: Open ArmouryCrate lighting page for manual control
+    if (-not $ok) {
+        try { Start-Process "armourycrate://device/lighting" -EA 0 } catch {}
+        $icon.ShowBalloonTip(5000, "Quick Settings", "Motherboard RGB needs admin. AC opened for manual control.", [Windows.Forms.ToolTipIcon]::Info)
+    }
+    
     $script:sleepModeOn = $true
 }
 
