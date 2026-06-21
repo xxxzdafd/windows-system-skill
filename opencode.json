@@ -1,0 +1,12 @@
+{
+  "name": "windows-system-skill",
+  "description": "Windows System administration skill for AI agents. PowerShell-native commands for managing processes, services, disk, network, registry, users, event logs, updates, and system configuration.",
+  "version": "1.0.0",
+  "skills": [
+    {
+      "name": "windows-system",
+      "description": "Use when managing, troubleshooting, or inspecting Windows systems — processes, services, disk, network, registry, users, event logs, updates, or system configuration. Covers PowerShell-native commands for system administration.",
+      "path": "SKILL.md"
+    }
+  ]
+}
