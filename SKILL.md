@@ -22,6 +22,19 @@ PowerShell-native Windows administration — inspect and control every major sub
 | "啥系统/多少内存/硬件" | [system.md](references/system.md) |
 | "快速设置/HDR/电源/深色模式/音量" | [quick-settings.ps1](references/quick-settings.ps1) |
 
+## Quick Settings Panel
+
+系统托盘工具，一键切换常用设置。零依赖，纯 PowerShell。
+
+| 功能 | 说明 |
+|------|------|
+| HDR 开关 | 模拟点按显示设置 |
+| 电源模式 | 平衡/省电/高性能 |
+| 深色模式 | 切换系统深色/浅色主题 |
+| 音量调节 | 滑动条实时调整 |
+
+启动：右键 `references/quick-settings.ps1` → Run with PowerShell。托盘出现后左键点击打开面板。
+
 ## Safety Rules
 - `⚠️` prefix = destructive. Always confirm with user before running.
 - Add `-WhatIf` to preview before write operations
