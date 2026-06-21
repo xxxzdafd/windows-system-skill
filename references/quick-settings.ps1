@@ -1,9 +1,14 @@
 <# 
   Quick Settings Panel for Windows v1
-  System tray panel: HDR, power mode, dark mode, volume, display
+  System tray panel: HDR, power mode, dark mode, volume, display, sleep mode
   Zero dependency, pure PowerShell 5.1+
+  
+  Sleep Mode uses OpenRGB (https://openrgb.org) for lighting control if available.
+  OpenRGB is free, open-source (GPLv2), and supports most motherboard/GPU/RAM RGB.
+  If not installed, Sleep Mode still works: monitor off + mute + dark mode + power saver.
 #>
 
+$ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Windows.Forms,System.Drawing
 
 #===================== Win32 API =====================
@@ -32,6 +37,60 @@ public class Audio {
 $script:darkMode = $null
 $script:hdrOn = $null
 $script:vol = 50
+
+#===================== Sleep Mode =====================
+$script:sleepModeOn = $false
+$script:sleepWasDark = $false
+$script:sleepWasVol = 50
+
+function Find-OpenRGB {
+    $paths = @(
+        "$PSScriptRoot\OpenRGB.exe",
+        "$PSScriptRoot\OpenRGB\OpenRGB.exe",
+        "$env:LOCALAPPDATA\OpenRGB\OpenRGB.exe",
+        "$env:ProgramFiles\OpenRGB\OpenRGB.exe",
+        "${env:ProgramFiles(x86)}\OpenRGB\OpenRGB.exe"
+    )
+    foreach ($p in $paths) { if (Test-Path $p) { return $p } }
+    return $null
+}
+
+function Set-LightsOff {
+    $exe = Find-OpenRGB
+    if ($exe) {
+        Start-Process $exe -ArgumentList "--noautoconnect --command 0" -WindowStyle Hidden
+        return $true
+    }
+    return $false
+}
+
+function Set-LightsOn {
+    $exe = Find-OpenRGB
+    if ($exe) {
+        Start-Process $exe -ArgumentList "--noautoconnect --command 1" -WindowStyle Hidden
+    }
+}
+
+function Invoke-SleepMode {
+    $script:sleepWasDark = Get-DarkMode
+    $script:sleepWasVol = Get-Volume
+    
+    Set-Volume 0
+    if (-not $script:sleepWasDark) { Set-DarkMode $true }
+    Set-PowerScheme "381b4222-f694-41f0-9685-ff5bb260df2f"
+    
+    if (-not (Set-LightsOff)) { }
+    
+    [QS]::SendMessage(-1, 0x0112, 0xF170, 2)
+    $script:sleepModeOn = $true
+}
+
+function Invoke-WakeMode {
+    Set-LightsOn
+    Set-PowerScheme "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+    if (-not $script:sleepWasDark) { Set-DarkMode $false }
+    $script:sleepModeOn = $false
+}
 
 #===================== Helper functions =====================
 function Get-DarkMode {
@@ -153,6 +212,38 @@ $trackVol.Add_Scroll({
     $lblVol.Text = "Volume: $($script:vol)%"
 })
 
+# --- Sleep Mode ---
+$lblSleep = New-Object Windows.Forms.Label
+$lblSleep.Text = "Sleep Mode:"
+$lblSleep.Location = New-Object Drawing.Point(15,225)
+$lblSleep.Size = New-Object Drawing.Size(80,25)
+
+$btnSleep = New-Object Windows.Forms.Button
+$btnSleep.Text = "Sleep"
+$btnSleep.Location = New-Object Drawing.Point(95,223)
+$btnSleep.Size = New-Object Drawing.Size(75,25)
+$btnSleep.BackColor = [Drawing.Color]::FromArgb(50, 50, 80)
+$btnSleep.ForeColor = [Drawing.Color]::White
+$btnSleep.Add_Click({
+    if ($script:sleepModeOn) {
+        Invoke-WakeMode
+        $btnSleep.Text = "Sleep"
+        $btnSleep.BackColor = [Drawing.Color]::FromArgb(50, 50, 80)
+        $lblSleep.Text = "Sleep Mode:"
+        $script:vol = Get-Volume
+        $trackVol.Value = $script:vol
+        $lblVol.Text = "Volume: $($script:vol)%"
+    } else {
+        Invoke-SleepMode
+        $btnSleep.Text = "Wake"
+        $btnSleep.BackColor = [Drawing.Color]::FromArgb(80, 140, 80)
+        $lblSleep.Text = "Sleep Mode: ON"
+        $trackVol.Value = 0
+        $lblVol.Text = "Volume: 0%"
+        $form.Hide()
+    }
+})
+
 # --- Close button ---
 $btnClose = New-Object Windows.Forms.Button
 $btnClose.Text = "Close"
@@ -161,7 +252,7 @@ $btnClose.Size = New-Object Drawing.Size(100,30)
 $btnClose.Add_Click({ $form.Close() })
 
 # --- Add controls ---
-$form.Controls.AddRange(@($title,$lblHDR,$btnHDR,$lblPower,$cmbPower,$chkDark,$lblVol,$trackVol,$btnClose))
+$form.Controls.AddRange(@($title,$lblHDR,$btnHDR,$lblPower,$cmbPower,$chkDark,$lblVol,$trackVol,$lblSleep,$btnSleep,$btnClose))
 
 #===================== System Tray =====================
 $icon = New-Object Windows.Forms.NotifyIcon
