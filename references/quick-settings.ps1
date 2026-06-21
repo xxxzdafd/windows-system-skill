@@ -92,6 +92,7 @@ function Stop-RGBServices {
             if ($?) { $script:stoppedSvcs += $s }
         }
     }
+    return $script:stoppedSvcs.Count -gt 0
 }
 
 function Start-RGBServices {
@@ -112,16 +113,33 @@ function Invoke-SleepMode {
     Set-Volume 0
     if (-not $script:sleepWasDark) { Set-DarkMode $true }
     
-    # Layer 1: ASUS Aura COM API (RAM/GPU/peripheral LEDs)
+    # Layer 1: ASUS Aura COM API (RAM/GPU/peripheral LEDs, no admin needed)
     $ok = Invoke-ASUSComOff
     
-    # Layer 2: Admin privileges -> stop lighting services (motherboard RGB)
-    if (-not $ok -and (Test-Admin)) { Stop-RGBServices; $ok = ($script:stoppedSvcs.Count -gt 0) }
+    # Layer 2: Stop RGB services (needs admin for motherboard RGB)
+    if (-not $ok) {
+        if (Test-Admin) {
+            Stop-RGBServices
+            $ok = ($script:stoppedSvcs.Count -gt 0)
+        } else {
+            # Auto-elevate: relaunch self as admin to stop services
+            $selfScript = $MyInvocation.MyCommand.Path
+            if (-not $selfScript) { $selfScript = "$PSScriptRoot\quick-settings.ps1" }
+            $tmp = "$env:TEMP\_killlights.ps1"
+            @"
+`$svcs = @('LightingService','CorsairService','AsusRogLiveService','MysticLight','RGBFusion','RzChromaStreamServer','NZXT CAM','LConnect3')
+foreach (`$s in `$svcs) { `$svc = Get-Service `$s -EA 0; if (`$svc -and `$svc.Status -eq 'Running') { Stop-Service `$svc -Force -EA 0 } }
+"@ | Out-File $tmp -Encoding UTF8
+            Start-Process powershell -Verb RunAs -ArgumentList "-NoP -File `"$tmp`"" -WindowStyle Hidden
+            Start-Sleep 1
+            $icon.ShowBalloonTip(3000, "Quick Settings", "UAC prompt for motherboard RGB. Click Yes.", [Windows.Forms.ToolTipIcon]::Info)
+            $ok = $true
+        }
+    }
     
-    # Layer 3: Open ArmouryCrate lighting page for manual control
+    # Layer 3: Open ArmouryCrate if nothing worked
     if (-not $ok) {
         try { Start-Process "armourycrate://device/lighting" -EA 0 } catch {}
-        $icon.ShowBalloonTip(5000, "Quick Settings", "Motherboard RGB needs admin. AC opened for manual control.", [Windows.Forms.ToolTipIcon]::Info)
     }
     
     $script:sleepModeOn = $true
