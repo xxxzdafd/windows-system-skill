@@ -22,6 +22,19 @@ PowerShell-native Windows administration — inspect and control every major sub
 | "what system/how much RAM/hardware" | [system.md](references/system.md) |
 | "quick settings/HDR/power mode/dark mode/volume" | [quick-settings.ps1](references/quick-settings.ps1) |
 
+## Quick Settings Panel
+
+System tray tool for one-click settings toggles. Zero dependencies, pure PowerShell.
+
+| Feature | Description |
+|---------|-------------|
+| HDR toggle | Opens display settings to HDR switch |
+| Power mode | Balanced / Power Saver / High Performance |
+| Dark mode | Toggles system dark/light theme |
+| Volume | Slider for real-time volume control |
+
+Launch: Right-click `references/quick-settings.ps1` → Run with PowerShell. Left-click tray icon to open panel.
+
 ## Safety Rules
 - check for `⚠️` prefix = destructive. Always confirm with user before running.
 - Add `-WhatIf` to preview before write operations
