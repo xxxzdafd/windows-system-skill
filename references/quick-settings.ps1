@@ -42,33 +42,32 @@ $script:vol = 50
 $script:sleepModeOn = $false
 $script:sleepWasDark = $false
 $script:sleepWasVol = 50
+$script:stoppedSvcs = @()
 
-function Find-OpenRGB {
-    $paths = @(
-        "$PSScriptRoot\OpenRGB.exe",
-        "$PSScriptRoot\OpenRGB\OpenRGB.exe",
-        "$env:LOCALAPPDATA\OpenRGB\OpenRGB.exe",
-        "$env:ProgramFiles\OpenRGB\OpenRGB.exe",
-        "${env:ProgramFiles(x86)}\OpenRGB\OpenRGB.exe"
-    )
-    foreach ($p in $paths) { if (Test-Path $p) { return $p } }
-    return $null
+$lightSvcs = @(
+    "LightingService","CorsairService","AsusRogLiveService",
+    "MysticLight","RGBFusion","RzChromaStreamServer","NZXT CAM","LConnect3"
+)
+
+function Stop-RGBServices {
+    $script:stoppedSvcs = @()
+    foreach ($s in $lightSvcs) {
+        $svc = Get-Service $s -EA 0
+        if ($svc -and $svc.Status -eq "Running") {
+            Stop-Service $svc -Force -EA 0
+            $script:stoppedSvcs += $s
+        }
+    }
 }
 
-function Set-LightsOff {
-    $exe = Find-OpenRGB
-    if ($exe) {
-        Start-Process $exe -ArgumentList "--noautoconnect --command 0" -WindowStyle Hidden
-        return $true
+function Start-RGBServices {
+    foreach ($s in $script:stoppedSvcs) {
+        $svc = Get-Service $s -EA 0
+        if ($svc -and $svc.Status -ne "Running") {
+            Start-Service $svc -EA 0
+        }
     }
-    return $false
-}
-
-function Set-LightsOn {
-    $exe = Find-OpenRGB
-    if ($exe) {
-        Start-Process $exe -ArgumentList "--noautoconnect --command 1" -WindowStyle Hidden
-    }
+    $script:stoppedSvcs = @()
 }
 
 function Invoke-SleepMode {
@@ -77,18 +76,17 @@ function Invoke-SleepMode {
     
     Set-Volume 0
     if (-not $script:sleepWasDark) { Set-DarkMode $true }
-    Set-PowerScheme "381b4222-f694-41f0-9685-ff5bb260df2f"
     
-    if (-not (Set-LightsOff)) { }
-    
+    Stop-RGBServices
     [QS]::SendMessage(-1, 0x0112, 0xF170, 2)
     $script:sleepModeOn = $true
 }
 
 function Invoke-WakeMode {
-    Set-LightsOn
-    Set-PowerScheme "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+    Start-RGBServices
     if (-not $script:sleepWasDark) { Set-DarkMode $false }
+    Set-Volume $script:sleepWasVol
+    [QS]::SendMessage(-1, 0x0112, 0xF170, -1)
     $script:sleepModeOn = $false
 }
 
@@ -177,9 +175,9 @@ $cmbPower = New-Object Windows.Forms.ComboBox
 $cmbPower.Location = New-Object Drawing.Point(95,98)
 $cmbPower.Size = New-Object Drawing.Size(175,25)
 $cmbPower.DropDownStyle = "DropDownList"
-$items = @(@{g="8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c";n="Balanced"},
-          @{g="381b4222-f694-41f0-9685-ff5bb260df2f";n="Power Saver"},
-          @{g="e9a42b02-d5df-448d-aa00-03f14749eb61";n="High Performance"})
+$items = @(@{g="381b4222-f694-41f0-9685-ff5bb260df2e";n="Balanced"},
+          @{g="a1841308-3541-4fab-bc81-f71556f20b4a";n="Power Saver"},
+          @{g="8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c";n="High Performance"})
 foreach ($i in $items) { [void]$cmbPower.Items.Add($i.n) }
 $cmbPower.Add_SelectedIndexChanged({
     $guid = $items[$cmbPower.SelectedIndex].g
